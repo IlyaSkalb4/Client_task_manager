@@ -31,6 +31,7 @@ namespace Client_task_manager
                 new MyTask { TaskTitle = "Task1", TaskText = "Do this and that", DeadlineValue = 33 },
                 new MyTask { TaskTitle = "Task2", TaskText = "Do that and this", DeadlineValue = 67 },
                 new MyTask { TaskTitle = "Task3", TaskText = "Do this and that", DeadlineValue = 14 },
+                new MyTask { TaskTitle = "Task4", TaskText = "Do this and that", DeadlineValue = 77 },
             };
 
             foreach (MyTask task in tasks)
