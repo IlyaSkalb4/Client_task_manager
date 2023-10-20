@@ -1,0 +1,34 @@
+﻿<Window x:Class="Client_task_manager.SignInWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client_task_manager"
+        mc:Ignorable="d"
+    Title="Sign_in" Height="250" Width="400" FontSize="18" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Sign in" TextAlignment="Center"/>
+
+        <TextBox Grid.Row="1" x:Name="emailTextBox" Text="your_mail@yourmail.com" Background="Aqua"/>
+
+        <TextBox Grid.Row="2" x:Name="passwordTextBox" Text="your_password" Background="LightBlue"/>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="logInButton" Grid.Column="0" Content="Log in" Margin="5" Click="logInButton_Click"/>
+
+            <Button x:Name="signUpButton" Grid.Column="1" Content="Sign up" Margin="5" Click="signUpButton_Click"/>
+        </Grid>
+    </Grid>
+</Window>
