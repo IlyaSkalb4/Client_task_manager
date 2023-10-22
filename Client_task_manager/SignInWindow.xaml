@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client_task_manager"
         mc:Ignorable="d"
-    Title="Sign_in" Height="250" Width="400" FontSize="18" Loaded="Window_Loaded">
+    Title="Sign_in" Height="250" Width="400" FontSize="18" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -16,9 +16,9 @@
 
         <TextBlock Grid.Row="0" Text="Sign in" TextAlignment="Center"/>
 
-        <TextBox Grid.Row="1" x:Name="emailTextBox" Text="your_mail@yourmail.com" Background="Aqua"/>
+        <TextBox Grid.Row="1" x:Name="emailTextBox" Text="bob@gmail.com" Background="Aqua"/>
 
-        <TextBox Grid.Row="2" x:Name="passwordTextBox" Text="your_password" Background="LightBlue"/>
+        <TextBox Grid.Row="2" x:Name="passwordTextBox" Text="123456789" Background="LightBlue"/>
 
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
