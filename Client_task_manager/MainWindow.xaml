@@ -7,35 +7,25 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" WindowState="Maximized" Loaded="Window_Loaded">
     <Grid>
-        <ListBox x:Name="taskListBox">
-            <ListBox.ContextMenu>
+        <ListView x:Name="taskListBox" >
+            <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Выполнить" Click="CompleteMenuItem_Click"/>
+                    <MenuItem Header="Выполнить" Click="CompleteMenuItem_Click" />
                 </ContextMenu>
-            </ListBox.ContextMenu>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid Background="Aquamarine" Width="700" Height="200" Margin="5" >
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="30*"/>
-                            <RowDefinition Height="30*"/>
-                            <RowDefinition Height="20*"/>
-                            <RowDefinition Height="20*"/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Grid.Row="0" Text="{Binding Path=TaskTitle}" TextAlignment="Left" FontSize="14" Background="LightYellow" Margin="5"/>
-
-                        <Grid Grid.Row="1">
-                            <TextBlock Text="{Binding Path=TaskText}" TextAlignment="Left" FontSize="14" Background="LightPink" Margin="5"/>
-                        </Grid>
-
-                        <TextBlock Grid.Row="2" Text="Срок выполнения:" TextAlignment="Left" FontSize="14" Margin="5"/>
-
-                        <ProgressBar Grid.Row="3" Value="{Binding Path=DeadlineValue}" x:Name="deadlineProgressBar" Margin="5"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ListView.ContextMenu>
+            <ListView.View>
+                <GridView>
+                    <!-- Other columns -->
+                    <GridViewColumn Header="Progress">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ProgressBar Value="{Binding DeadlineValue}" Maximum="100"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
         
     </Grid>
 </Window>

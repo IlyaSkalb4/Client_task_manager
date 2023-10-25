@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows;
 using Classes_for_transferring_users;
 
 namespace Client_task_manager
@@ -22,16 +23,6 @@ namespace Client_task_manager
 
         private IFormatter formatter = null;
 
-        private const string serverIP = "127.0.0.1";
-        //private const string serverIP = "77.122.231.142";  
-        private const string emailPattern = @"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b";
-        private const string passwordPattern = @"\w{8,}";
-        private const string login = "Login";
-        private const string registration = "Registration";
-        private const string userTask = "UserTasks";
-
-        private const int port1024 = 1024;
-
         public SignInWindow()
         {
             InitializeComponent();
@@ -39,6 +30,7 @@ namespace Client_task_manager
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ServerSide.Start();
         }
 
         private void logInButton_Click(object sender, RoutedEventArgs e)
@@ -46,14 +38,15 @@ namespace Client_task_manager
             string email = emailTextBox.Text;
             string password = passwordTextBox.Text;
 
-            if (email == "" || password == "" || !Regex.IsMatch(email, emailPattern) || !Regex.IsMatch(password, passwordPattern))
+            if (email == "" || password == "" ||
+                !CommonMethods.IsEmail(email) || !CommonMethods.IsPassword(password))
             {
                 return;
             }
 
             UserLogin userLogin = new UserLogin { UserEmail = email, UserPassword = password };
 
-            SendAndReceivePackageAsync(new ReadyPackage { ObjType = login, Data = userLogin });
+            SendAndReceivePackageAsync(new ReadyPackage { ObjType = Constants.Login, Data = userLogin });
         }
 
         private void signUpButton_Click(object sender, RoutedEventArgs e)
@@ -72,7 +65,7 @@ namespace Client_task_manager
             {
                 receivedPackage = (ReadyPackage)formatter.Deserialize(networkStream);
 
-                if(receivedPackage.ObjType == userTask) 
+                if(receivedPackage.ObjType == Constants.UserTask) 
                 {
                     myTasks = (List<UserTask>)receivedPackage.Data;
                 }
@@ -100,7 +93,7 @@ namespace Client_task_manager
             try
             {
                 tcpClient = new TcpClient();
-                tcpClient.Connect(serverIP, port1024);
+                tcpClient.Connect(Constants.ServerIP, Constants.Port1024);
 
                 networkStream = tcpClient.GetStream();
 

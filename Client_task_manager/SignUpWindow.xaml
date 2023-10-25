@@ -17,18 +17,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Sign up" TextAlignment="Center"/>
+        <TextBlock Grid.Row="0" Text="Sign up" TextAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBox Grid.Row="1" x:Name="firstNameTextBox" Text="First name" Background="Aqua"/>
+        <TextBox Grid.Row="1" x:Name="firstNameTextBox" Text="First name" Margin="10,5,10,5"/>
 
-        <TextBox Grid.Row="2" x:Name="lastNameTextBox" Text="Last name" Background="LightBlue"/>
-        
-        <TextBox Grid.Row="3" x:Name="emailTextBox" Text="Email" Background="CadetBlue"/>
-        
-        <TextBox Grid.Row="4" x:Name="passwordTextBox" Text="Password" Background="DeepSkyBlue"/>
-        
-        <TextBox Grid.Row="5" x:Name="passwordRepeatTextBox" Text="Repeat password" Background="DarkSlateBlue"/>
+        <TextBox Grid.Row="2" x:Name="lastNameTextBox" Text="Last name" Margin="10,5,10,5"/>
 
-        <Button Grid.Row="6" x:Name="singInButton" Grid.Column="0" Content="Sign up" Margin="5" Click="singInButton_Click"/>
+        <TextBox Grid.Row="3" x:Name="emailTextBox" Text="Email" Margin="10,5,10,5"/>
+
+        <TextBox Grid.Row="4" x:Name="passwordTextBox" Text="Password" Margin="10,5,10,5"/>
+
+        <TextBox Grid.Row="5" x:Name="passwordRepeatTextBox" Text="Repeat password" Margin="10,5,10,5"/>
+
+        <Button Grid.Row="6" x:Name="singUpButton" Grid.Column="0" Content="Sign up" Margin="10,5,10,5" Click="singUpButton_Click"/>
     </Grid>
 </Window>
