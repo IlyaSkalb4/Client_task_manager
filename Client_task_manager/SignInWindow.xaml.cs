@@ -46,7 +46,7 @@ namespace Client_task_manager
 
             UserLogin userLogin = new UserLogin { UserEmail = email, UserPassword = password };
 
-            SendAndReceivePackageAsync(new ReadyPackage { ObjType = Constants.Login, Data = userLogin });
+            SendAndReceivePackageAsync(new ReadyPackage { ObjType = Constants.Login, Data = userLogin, IsAgain = true });
         }
 
         private void signUpButton_Click(object sender, RoutedEventArgs e)
@@ -59,36 +59,7 @@ namespace Client_task_manager
             Show();
         }
 
-        private void ReceivePaсkage()
-        {
-            try
-            {
-                receivedPackage = (ReadyPackage)formatter.Deserialize(networkStream);
-
-                if(receivedPackage.ObjType == Constants.UserTask) 
-                {
-                    myTasks = (List<UserTask>)receivedPackage.Data;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                if (networkStream != null)
-                {
-                    networkStream.Close();
-                }
-
-                if (tcpClient != null)
-                {
-                    tcpClient.Close();
-                }
-            }
-        }
-
-        private bool SendPackage(ReadyPackage readyPackage)
+        private bool ConnectAndGetStream()
         {
             try
             {
@@ -96,7 +67,42 @@ namespace Client_task_manager
                 tcpClient.Connect(Constants.ServerIP, Constants.Port1024);
 
                 networkStream = tcpClient.GetStream();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
 
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ReceivePaсkage()
+        {
+            try
+            {
+                receivedPackage = (ReadyPackage)formatter.Deserialize(networkStream);
+
+                if (receivedPackage.ObjType == Constants.UserTask)
+                {
+                    myTasks.Add((UserTask)receivedPackage.Data);
+                }
+
+                return receivedPackage.IsAgain;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            return false;
+        }
+
+        private bool SendPackage(ReadyPackage readyPackage)
+        {
+            try
+            {
                 formatter = new BinaryFormatter();
 
                 formatter.Serialize(networkStream, readyPackage);
@@ -120,18 +126,50 @@ namespace Client_task_manager
 
             await Task.Run(() =>
             {
-                taskRunResult = SendPackage(readyPackage);
+                taskRunResult = ConnectAndGetStream();
             });
 
-            if(!taskRunResult)
+            if (taskRunResult)
             {
-                logInButton.IsEnabled = true;
-                emailTextBox.IsEnabled = true;
-                passwordTextBox.IsEnabled = true;
-                return;
+                myTasks = new List<UserTask>();
+
+                while (true)
+                {
+                    await Task.Run(() =>
+                    {
+                        taskRunResult = SendPackage(readyPackage);
+                    });
+
+                    if (!taskRunResult)
+                    {
+                        break;
+                    }
+
+                    await Task.Run(() =>
+                    {
+                        taskRunResult = ReceivePaсkage();
+                    });
+
+                    if (!taskRunResult)
+                    {
+                        break;
+                    }
+
+                    readyPackage.Data = "";
+                    readyPackage.ObjType = Constants.GiveUserTask;
+                    readyPackage.IsAgain = true;
+                }
             }
 
-            await Task.Run(ReceivePaсkage);
+            if (networkStream != null)
+            {
+                networkStream.Close();
+            }
+
+            if (tcpClient != null)
+            {
+                tcpClient.Close();
+            }
 
             if (myTasks != null)
             {

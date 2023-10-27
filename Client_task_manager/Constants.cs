@@ -16,7 +16,8 @@ namespace Client_task_manager
             PasswordPattern = @"\w{8,}";
             Login = "Login";
             Registration = "Registration";
-            UserTask = "UserTasks";
+            UserTask = "UserTask";
+            GiveUserTask = "GiveUserTask";
 
             Port1024 = 1024;
         }
@@ -32,6 +33,8 @@ namespace Client_task_manager
         public static string Registration { get; private set; }
 
         public static string UserTask { get; private set; }
+
+        public static string GiveUserTask { get; private set; }
 
 
         public static int Port1024 { get; private set; }

@@ -44,18 +44,18 @@ namespace Client_task_manager
 
             foreach (UserTask task in tasks)
             {
-                taskListBox.Items.Add(task);
+                currentTasksListBox.Items.Add(task);
             }
         }
 
         private void CompleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (taskListBox.SelectedItems.Count < 1)
+            if (currentTasksListBox.SelectedItems.Count < 1)
             {
                 return;
             }
 
-            taskListBox.Items.RemoveAt(taskListBox.SelectedIndex);
+            currentTasksListBox.Items.RemoveAt(currentTasksListBox.SelectedIndex);
         }
     }
 }

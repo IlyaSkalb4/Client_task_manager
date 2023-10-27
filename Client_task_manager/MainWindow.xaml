@@ -7,25 +7,44 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" WindowState="Maximized" Loaded="Window_Loaded">
     <Grid>
-        <ListView x:Name="taskListBox" >
-            <ListView.ContextMenu>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <ListBox Grid.Column="0" x:Name="currentTasksListBox">
+            <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Выполнить" Click="CompleteMenuItem_Click" />
                 </ContextMenu>
-            </ListView.ContextMenu>
-            <ListView.View>
-                <GridView>
-                    <!-- Other columns -->
-                    <GridViewColumn Header="Progress">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <ProgressBar Value="{Binding DeadlineValue}" Maximum="100"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
+            </ListBox.ContextMenu>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="700" Height="200" Margin="5" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30*"/>
+                            <RowDefinition Height="30*"/>
+                            <RowDefinition Height="20*"/>
+                            <RowDefinition Height="20*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="{Binding Path=TaskTitle}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="5"/>
+
+                        <Grid Grid.Row="1">
+                            <TextBlock Text="{Binding Path=TaskText}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="5"/>
+                        </Grid>
+
+                        <TextBlock Grid.Row="2" Text="Срок выполнения:" TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="5"/>
+
+                        <ProgressBar Grid.Row="3" Value="{Binding Path=DeadlineValue}" x:Name="deadlineProgressBar" Margin="5"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ListBox Grid.Column="1" Name="completeTasksListBox">
+            
+        </ListBox>
         
     </Grid>
 </Window>
