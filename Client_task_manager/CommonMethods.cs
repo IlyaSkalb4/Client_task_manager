@@ -10,20 +10,15 @@ namespace Client_task_manager
 {
     public class CommonMethods
     {
-        //private DialogResult ShowInfoMessage(string message)
-        //{
-        //    return MessageBox.Show(message, MyConstant.Informantion, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //}
+        public static void ShowErrorMessage(string message)
+        {
+            MessageBox.Show(message, Constants.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
 
-        //private DialogResult ShowWarningMessage(string message)
-        //{
-        //    return MessageBox.Show(message, MyConstant.Warning, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-        //}
-
-        //private DialogResult ShowErrorMessage(string message)
-        //{
-        //    return MessageBox.Show(message, MyConstant.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //}
+        public static bool IsLineEmpty(string line)
+        {
+            return line == "";
+        }
 
         public static bool IsPassword(string password)
         {

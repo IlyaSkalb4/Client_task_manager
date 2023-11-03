@@ -78,6 +78,18 @@ namespace Client_task_manager
             {
                 MessageBox.Show("Registration request has been sent!");
             }
+
+            if (networkStream != null)
+            {
+                networkStream.Close();
+            }
+
+            if (tcpClient != null)
+            {
+                tcpClient.Close();
+            }
+
+            Close();
         }
     }
 }

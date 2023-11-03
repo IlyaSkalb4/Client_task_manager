@@ -13,15 +13,7 @@ namespace Client_task_manager
 {
     public partial class SignInWindow : Window
     {
-        private TcpClient tcpClient = null;
-
-        private List<UserTask> myTasks = null;
-
-        private ReadyPackage receivedPackage = null;
-
-        private NetworkStream networkStream = null;
-
-        private IFormatter formatter = null;
+        private NetworkManager networkManager = null;
 
         public SignInWindow()
         {
@@ -31,22 +23,56 @@ namespace Client_task_manager
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ServerSide.Start();
+
+            networkManager = new NetworkManager();
         }
 
         private void logInButton_Click(object sender, RoutedEventArgs e)
         {
+            UserLogin userLogin;
+
+            ReadyPackage sendPackage;
+
             string email = emailTextBox.Text;
             string password = passwordTextBox.Text;
 
-            if (email == "" || password == "" ||
-                !CommonMethods.IsEmail(email) || !CommonMethods.IsPassword(password))
+            bool check = false;
+
+            emailWarningTextBlock.Text = "";
+            passwordWarningTextBlock.Text = "";
+
+            if (CommonMethods.IsLineEmpty(email))
             {
+                emailWarningTextBlock.Text = Constants.EnterEmail;
+                check = true;
+            }
+            else if (!CommonMethods.IsEmail(email))
+            {
+                emailWarningTextBlock.Text = Constants.IncorrectEmail;
+                check = true;
+            }
+
+            if (CommonMethods.IsLineEmpty(password))
+            {
+                passwordWarningTextBlock.Text = Constants.EnterPassword;
+                check = true;
+            }
+            else if(!CommonMethods.IsPassword(password))
+            {
+                passwordWarningTextBlock.Text = Constants.IncorrectPassword;
+                check = true;
+            }
+
+            if(check)
+            { 
                 return;
             }
 
-            UserLogin userLogin = new UserLogin { UserEmail = email, UserPassword = password };
+            userLogin = new UserLogin { UserEmail = email, UserPassword = password };
 
-            SendAndReceivePackageAsync(new ReadyPackage { ObjType = Constants.Login, Data = userLogin, IsAgain = true });
+            sendPackage = new ReadyPackage { ObjType = Constants.Login, Data = userLogin, RepeatStatus = true };
+
+            SendAndReceivePackageAsync(sendPackage);
         }
 
         private void signUpButton_Click(object sender, RoutedEventArgs e)
@@ -59,132 +85,51 @@ namespace Client_task_manager
             Show();
         }
 
-        private bool ConnectAndGetStream()
-        {
-            try
-            {
-                tcpClient = new TcpClient();
-                tcpClient.Connect(Constants.ServerIP, Constants.Port1024);
-
-                networkStream = tcpClient.GetStream();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool ReceivePaсkage()
-        {
-            try
-            {
-                receivedPackage = (ReadyPackage)formatter.Deserialize(networkStream);
-
-                if (receivedPackage.ObjType == Constants.UserTask)
-                {
-                    myTasks.Add((UserTask)receivedPackage.Data);
-                }
-
-                return receivedPackage.IsAgain;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            return false;
-        }
-
-        private bool SendPackage(ReadyPackage readyPackage)
-        {
-            try
-            {
-                formatter = new BinaryFormatter();
-
-                formatter.Serialize(networkStream, readyPackage);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return false;
-            }
-
-            return true;
-        }
-
         private async void SendAndReceivePackageAsync(ReadyPackage readyPackage)
         {
             logInButton.IsEnabled = false;
             emailTextBox.IsEnabled = false;
             passwordTextBox.IsEnabled = false;
+            signUpButton.IsEnabled = false;
 
-            bool taskRunResult = false;
-
-            await Task.Run(() =>
+            if(await networkManager.SendAndReceivePackageAsync(readyPackage))
             {
-                taskRunResult = ConnectAndGetStream();
-            });
+                string errorType = networkManager.ErrorType;
+                string errorMessage = networkManager.ErrorMessage;
 
-            if (taskRunResult)
-            {
-                myTasks = new List<UserTask>();
-
-                while (true)
+                if (!CommonMethods.IsLineEmpty(errorType))
                 {
-                    await Task.Run(() =>
+                    if (errorType == Constants.Email)
                     {
-                        taskRunResult = SendPackage(readyPackage);
-                    });
-
-                    if (!taskRunResult)
-                    {
-                        break;
+                        emailWarningTextBlock.Text = errorMessage;
                     }
-
-                    await Task.Run(() =>
+                    else if (errorType == Constants.Password)
                     {
-                        taskRunResult = ReceivePaсkage();
-                    });
-
-                    if (!taskRunResult)
-                    {
-                        break;
+                        passwordWarningTextBlock.Text = errorMessage;
                     }
-
-                    readyPackage.Data = "";
-                    readyPackage.ObjType = Constants.GiveUserTask;
-                    readyPackage.IsAgain = true;
                 }
-            }
 
-            if (networkStream != null)
-            {
-                networkStream.Close();
-            }
+                readyPackage = new ReadyPackage { ObjType = Constants.UserTask, Data = "", RepeatStatus = true };
 
-            if (tcpClient != null)
-            {
-                tcpClient.Close();
-            }
+                if (await networkManager.SendAndReceivePackageAsync(readyPackage))
+                {
+                    if (networkManager.UserTasks != null)
+                    {
+                        Hide();
 
-            if (myTasks != null)
-            {
-                Hide();
+                        MainWindow mainWindow = new MainWindow();
+                        mainWindow.UserTasks = networkManager.UserTasks;
+                        mainWindow.ShowDialog();
 
-                MainWindow mainWindow = new MainWindow();
-                mainWindow.UserTasks = myTasks;
-                mainWindow.ShowDialog();
-
-                Close();
+                        Close();
+                    }
+                }
             }
 
             logInButton.IsEnabled = true;
             emailTextBox.IsEnabled = true;
             passwordTextBox.IsEnabled = true;
+            signUpButton.IsEnabled = true;
         }
     }
 }
