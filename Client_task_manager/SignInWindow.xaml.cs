@@ -108,20 +108,22 @@ namespace Client_task_manager
                         passwordWarningTextBlock.Text = errorMessage;
                     }
                 }
-
-                readyPackage = new ReadyPackage { ObjType = Constants.UserTask, Data = "", RepeatStatus = true };
-
-                if (await networkManager.SendAndReceivePackageAsync(readyPackage))
+                else
                 {
-                    if (networkManager.UserTasks != null)
+                    readyPackage = new ReadyPackage { ObjType = Constants.UserTask, Data = "", RepeatStatus = true };
+
+                    if (await networkManager.SendAndReceivePackageAsync(readyPackage))
                     {
-                        Hide();
+                        if (networkManager.UserTasks != null)
+                        {
+                            Hide();
 
-                        MainWindow mainWindow = new MainWindow();
-                        mainWindow.UserTasks = networkManager.UserTasks;
-                        mainWindow.ShowDialog();
+                            MainWindow mainWindow = new MainWindow();
+                            mainWindow.UserTasks = networkManager.UserTasks;
+                            mainWindow.ShowDialog();
 
-                        Close();
+                            Close();
+                        }
                     }
                 }
             }
