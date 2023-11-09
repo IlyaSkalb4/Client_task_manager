@@ -25,7 +25,9 @@ namespace Client_task_manager
 
         private DispatcherTimer timer = null;
 
-        private int timerInterval = 10;
+        private UserLogin userLogin = null;
+
+        private int timerInterval = 30;
 
         public MainWindow()
         {
@@ -44,12 +46,24 @@ namespace Client_task_manager
             }
         }
 
+        public UserLogin MainUserLogin
+        {
+            get
+            {
+                return userLogin;
+            }
+            set
+            {
+                userLogin = value;
+            }
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             networkManager = new NetworkManager();
 
             timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMinutes(timerInterval);
+            //timer.Interval = TimeSpan.FromMinutes(timerInterval);
             timer.Interval = TimeSpan.FromSeconds(timerInterval);
             timer.Tick += Timer_Tick;
             timer.Start();
@@ -64,9 +78,8 @@ namespace Client_task_manager
         {
             ReadyPackage sendPackage = new ReadyPackage
             {
-                ObjType = Constants.UserTask,
-                Data = "",
-                RepeatStatus = true
+                ObjType = Constants.Login,
+                Data = userLogin
             };
 
             ReceiveUserTasksAsync(sendPackage);
@@ -79,11 +92,23 @@ namespace Client_task_manager
                 return;
             }
 
+            UserTask currentUserTask = (UserTask)currentTasksListBox.SelectedItem;
+
+            TaskAccomplished taskAccomplished = new TaskAccomplished
+            {
+                UserEmailAndPassword = new UserLogin
+                {
+                    UserEmail = userLogin.UserEmail,
+                    UserPassword = userLogin.UserPassword
+                },
+                SubTaskTitle = currentUserTask.SubTaskTitle,
+                IsTaskCompleted = currentUserTask.IsTaskCompleted
+            };
+
             ReadyPackage readyPackage = new ReadyPackage
             {
                 ObjType = Constants.CompletedUserTask,
-                Data = (UserTask)currentTasksListBox.SelectedItem,
-                RepeatStatus = true
+                Data = taskAccomplished
             };
 
             SendCompletedUserTaskAsync(readyPackage);
@@ -101,6 +126,10 @@ namespace Client_task_manager
 
                 networkManager.ClearUserTasks();
             }
+            else
+            {
+                CommonMethods.ShowErrorMessage(networkManager.ErrorMessage);
+            }
         }
 
         private async void SendCompletedUserTaskAsync(ReadyPackage readyPackage)
@@ -113,7 +142,7 @@ namespace Client_task_manager
             }
             else
             {
-                MessageBox.Show(networkManager.ErrorMessage, networkManager.ErrorType, MessageBoxButton.OK, MessageBoxImage.Error);
+                CommonMethods.ShowErrorMessage(networkManager.ErrorMessage);
             }
         }
 
@@ -121,19 +150,34 @@ namespace Client_task_manager
         {
             foreach (UserTask userTask in userTasks)
             {
-                if (userTask.IsTaskCompleted)
+                if (userTask.IsTaskCompleted.HasValue)
                 {
-                    completeTasksListBox.Items.Add(userTask);
-                }
-                else if (userTask.DeadlineValue == 100 && !userTask.IsTaskCompleted)
-                {
-                    expiredTasksListBox.Items.Add(userTask);
+                    if (userTask.IsTaskCompleted.Value)
+                    {
+                        completeTasksListBox.Items.Add(userTask);
+                    }
+                    else
+                    {
+                        expiredTasksListBox.Items.Add(userTask);
+                    }
                 }
                 else
                 {
-                    currentTasksListBox.Items.Add(userTask);
+                    if (userTask.DeadlineValue == 100)
+                    {
+                        completeTasksListBox.Items.Add(userTask);
+                    }
+                    else
+                    {
+                        currentTasksListBox.Items.Add(userTask);
+                    }
                 }
             }
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

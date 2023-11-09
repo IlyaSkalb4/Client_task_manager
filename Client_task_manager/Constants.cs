@@ -12,7 +12,7 @@ namespace Client_task_manager
         {
             Error = "Error";
             ServerIP = "127.0.0.1";
-            //ServerIP = "77.122.231.142";  
+            //ServerIP = "77.122.231.142";
             EmailPattern = @"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b";
             PasswordPattern = @"\w{8,}";
             Login = "Login";
@@ -23,9 +23,13 @@ namespace Client_task_manager
             EnterEmail = "Please enter your email!";
             EnterPassword = "Please enter your password!";
             IncorrectEmail = "Incorrect email! You may have made a mistake.";
+            IncorrectEmailSignIn = "The user with this email does not exist! You can register by clicking on the sign up button.";
             IncorrectPassword = "Password must contain at least 8 characters!";
+            IncorrectPasswordSignIn = "Wrong password. Try again!";
             Email = "Email";
             Password = "Password";
+            PasswordNotMatch = "The passwords don't match.";
+            MustBeFilled = "The field must be filled in!";
 
             Port1024 = 1024;
         }
@@ -54,12 +58,19 @@ namespace Client_task_manager
 
         public static string IncorrectEmail { get; private set; }
 
+        public static string IncorrectEmailSignIn { get; private set; }
+
         public static string IncorrectPassword { get; private set; }
+
+        public static string IncorrectPasswordSignIn { get; private set; }
 
         public static string Email { get; private set; }
 
         public static string Password { get; private set; }
 
+        public static string PasswordNotMatch { get; private set; }
+
+        public static string MustBeFilled { get; private set; }
 
         public static int Port1024 { get; private set; }
     }

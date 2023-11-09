@@ -15,6 +15,8 @@ namespace Client_task_manager
     {
         private NetworkManager networkManager = null;
 
+        private UserLogin userLogin = null;
+
         public SignInWindow()
         {
             InitializeComponent();
@@ -29,14 +31,12 @@ namespace Client_task_manager
 
         private void logInButton_Click(object sender, RoutedEventArgs e)
         {
-            UserLogin userLogin;
-
             ReadyPackage sendPackage;
 
             string email = emailTextBox.Text;
             string password = passwordTextBox.Text;
 
-            bool check = false;
+            bool flagCheck = false;
 
             emailWarningTextBlock.Text = "";
             passwordWarningTextBlock.Text = "";
@@ -44,33 +44,33 @@ namespace Client_task_manager
             if (CommonMethods.IsLineEmpty(email))
             {
                 emailWarningTextBlock.Text = Constants.EnterEmail;
-                check = true;
+                flagCheck = true;
             }
             else if (!CommonMethods.IsEmail(email))
             {
                 emailWarningTextBlock.Text = Constants.IncorrectEmail;
-                check = true;
+                flagCheck = true;
             }
 
             if (CommonMethods.IsLineEmpty(password))
             {
                 passwordWarningTextBlock.Text = Constants.EnterPassword;
-                check = true;
+                flagCheck = true;
             }
             else if(!CommonMethods.IsPassword(password))
             {
                 passwordWarningTextBlock.Text = Constants.IncorrectPassword;
-                check = true;
+                flagCheck = true;
             }
 
-            if(check)
+            if(flagCheck)
             { 
                 return;
             }
 
             userLogin = new UserLogin { UserEmail = email, UserPassword = password };
 
-            sendPackage = new ReadyPackage { ObjType = Constants.Login, Data = userLogin, RepeatStatus = true };
+            sendPackage = new ReadyPackage { ObjType = Constants.Login, Data = userLogin };
 
             SendAndReceivePackageAsync(sendPackage);
         }
@@ -92,39 +92,35 @@ namespace Client_task_manager
             passwordTextBox.IsEnabled = false;
             signUpButton.IsEnabled = false;
 
-            if(await networkManager.SendAndReceivePackageAsync(readyPackage))
+            if (await networkManager.SendAndReceivePackageAsync(readyPackage))
+            {
+                if (networkManager.UserTasks != null)
+                {
+                    Hide();
+
+                    MainWindow mainWindow = new MainWindow();
+                    mainWindow.UserTasks = networkManager.UserTasks;
+                    mainWindow.MainUserLogin = userLogin;
+                    mainWindow.ShowDialog();
+
+                    Close();
+                }
+            }
+            else
             {
                 string errorType = networkManager.ErrorType;
-                string errorMessage = networkManager.ErrorMessage;
 
-                if (!CommonMethods.IsLineEmpty(errorType))
+                if (errorType == Constants.Email)
                 {
-                    if (errorType == Constants.Email)
-                    {
-                        emailWarningTextBlock.Text = errorMessage;
-                    }
-                    else if (errorType == Constants.Password)
-                    {
-                        passwordWarningTextBlock.Text = errorMessage;
-                    }
+                    emailWarningTextBlock.Text = Constants.IncorrectEmailSignIn;
+                }
+                else if (errorType == Constants.Password)
+                {
+                    passwordWarningTextBlock.Text = Constants.IncorrectPasswordSignIn;
                 }
                 else
                 {
-                    readyPackage = new ReadyPackage { ObjType = Constants.UserTask, Data = "", RepeatStatus = true };
-
-                    if (await networkManager.SendAndReceivePackageAsync(readyPackage))
-                    {
-                        if (networkManager.UserTasks != null)
-                        {
-                            Hide();
-
-                            MainWindow mainWindow = new MainWindow();
-                            mainWindow.UserTasks = networkManager.UserTasks;
-                            mainWindow.ShowDialog();
-
-                            Close();
-                        }
-                    }
+                    CommonMethods.ShowErrorMessage(networkManager.ErrorMessage);
                 }
             }
 

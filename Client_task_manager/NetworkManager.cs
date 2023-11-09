@@ -40,7 +40,7 @@ namespace Client_task_manager
         {
             bool taskRunResult = false;
 
-            flagRequestApproved = false;
+            flagRequestApproved = true;
 
             await Task.Run(() =>
             {
@@ -51,26 +51,14 @@ namespace Client_task_manager
             {
                 formatter = new BinaryFormatter();
 
-                ErrorType = "";
-
                 await Task.Run(() =>
                 {
                     taskRunResult = SendPackage(readyPackage);
                 });
 
-                await Task.Run(() =>
+                if (taskRunResult)
                 {
-                    taskRunResult = ReceivePaсkage();
-                });
-
-                flagRequestApproved = taskRunResult;
-
-                while (taskRunResult)
-                {
-                    await Task.Run(() =>
-                    {
-                        taskRunResult = ReceivePaсkage();
-                    });
+                    await Task.Run(ReceivePaсkage);
                 }
             }
 
@@ -121,44 +109,41 @@ namespace Client_task_manager
             return true;
         }
 
-        private bool ReceivePaсkage()
+        private void ReceivePaсkage()
         {
             try
             {
                 receivedPackage = (ReadyPackage)formatter.Deserialize(networkStream);
 
                 string objType = receivedPackage.ObjType;
+                object data = receivedPackage.Data;
 
-                if (objType != "")
+                if (objType != null)
                 {
                     if (objType == Constants.UserTask)
                     {
-                        if (userTasks == null)
-                        {
-                            userTasks = new List<UserTask>();
-                        }
-
-                        if (objType != null)
-                        {
-                            userTasks.Add((UserTask)receivedPackage.Data);
-                        }
+                        userTasks = (List<UserTask>)receivedPackage.Data;
+                    }
+                    else if(objType == Constants.Registration)
+                    {
+                        ErrorMessage = data.ToString();
                     }
                     else
                     {
-                        ErrorType = objType;
+                        flagRequestApproved = false;
 
-                        ErrorMessage = receivedPackage.Data.ToString();
+                        ErrorType = objType;
+                        if (data != null)
+                        {
+                            ErrorMessage = receivedPackage.Data.ToString();
+                        }
                     }
                 }
-
-                return receivedPackage.RepeatStatus;
             }
             catch (Exception ex)
             {
                 CommonMethods.ShowErrorMessage(ex.Message);
             }
-
-            return false;
         }
     }
 }

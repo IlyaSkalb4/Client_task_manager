@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client_task_manager"
         mc:Ignorable="d"
-        Title="Sign_up" SizeToContent="WidthAndHeight" FontSize="18" WindowStartupLocation="CenterScreen">
-    <Grid>
+        Title="Sign_up" SizeToContent="WidthAndHeight" FontSize="18" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid Style="{DynamicResource ResourceKey=GridGradientStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -24,23 +24,23 @@
 
         <TextBlock Grid.Row="0" Text="Sign up" TextAlignment="Center" VerticalAlignment="Center" Margin="10"/>
 
-        <TextBlock Grid.Row="1" x:Name="firstNameWarningTextBlock" Text="FNError" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="1" x:Name="firstNameWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
         <TextBox Grid.Row="2" x:Name="firstNameTextBox" Text="First name" Margin="10,5,10,5"/>
 
-        <TextBlock Grid.Row="3" x:Name="lastNameWarningTextBlock" Text="LNError" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="3" x:Name="lastNameWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
         
         <TextBox Grid.Row="4" x:Name="lastNameTextBox" Text="Last name" Margin="10,5,10,5"/>
 
-        <TextBlock Grid.Row="5" x:Name="emailWarningTextBlock" Text="EmailError" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="5" x:Name="emailWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
         <TextBox Grid.Row="6" x:Name="emailTextBox" Text="Email" Margin="10,5,10,5"/>
 
-        <TextBlock Grid.Row="7" x:Name="passwordWarningTextBlock" Text="PasswordError" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="7" x:Name="passwordWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
         <TextBox Grid.Row="8" x:Name="passwordTextBox" Text="Password" Margin="10,5,10,5"/>
 
-        <TextBlock Grid.Row="9" x:Name="passwordRepeatWarningTextBlock" Text="PRError" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="9" x:Name="passwordRepeatWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
         <TextBox Grid.Row="10" x:Name="passwordRepeatTextBox" Text="Repeat password" Margin="10,5,10,5"/>
 

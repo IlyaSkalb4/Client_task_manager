@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Client_task_manager"
         mc:Ignorable="d"
     Title="Sign_in" SizeToContent="WidthAndHeight" FontSize="18" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
-    <Grid>
+    <Grid Style="{DynamicResource ResourceKey=GridGradientStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
