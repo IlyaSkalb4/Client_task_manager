@@ -8,6 +8,8 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using Classes_for_transferring_users;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Client_task_manager
 {
@@ -16,6 +18,10 @@ namespace Client_task_manager
         private NetworkManager networkManager = null;
 
         private UserLogin userLogin = null;
+
+        private string passwordLine;
+
+        private int previouseLengthPasswordLine;
 
         public SignInWindow()
         {
@@ -27,6 +33,8 @@ namespace Client_task_manager
             ServerSide.Start();
 
             networkManager = new NetworkManager();
+
+            passwordLine = "";
         }
 
         private void logInButton_Click(object sender, RoutedEventArgs e)
@@ -34,14 +42,13 @@ namespace Client_task_manager
             ReadyPackage sendPackage;
 
             string email = emailTextBox.Text;
-            string password = passwordTextBox.Text;
 
             bool flagCheck = false;
 
             emailWarningTextBlock.Text = "";
             passwordWarningTextBlock.Text = "";
 
-            if (CommonMethods.IsLineEmpty(email))
+            if (CommonMethods.IsLineEmpty(email) || email == Constants.Email)
             {
                 emailWarningTextBlock.Text = Constants.EnterEmail;
                 flagCheck = true;
@@ -52,12 +59,12 @@ namespace Client_task_manager
                 flagCheck = true;
             }
 
-            if (CommonMethods.IsLineEmpty(password))
+            if (CommonMethods.IsLineEmpty(passwordLine))
             {
                 passwordWarningTextBlock.Text = Constants.EnterPassword;
                 flagCheck = true;
             }
-            else if(!CommonMethods.IsPassword(password))
+            else if(!CommonMethods.IsPassword(passwordLine))
             {
                 passwordWarningTextBlock.Text = Constants.IncorrectPassword;
                 flagCheck = true;
@@ -68,7 +75,7 @@ namespace Client_task_manager
                 return;
             }
 
-            userLogin = new UserLogin { UserEmail = email, UserPassword = password };
+            userLogin = new UserLogin { UserEmail = email, UserPassword = passwordLine };
 
             sendPackage = new ReadyPackage { ObjType = Constants.Login, Data = userLogin };
 
@@ -101,9 +108,23 @@ namespace Client_task_manager
                     MainWindow mainWindow = new MainWindow();
                     mainWindow.UserTasks = networkManager.UserTasks;
                     mainWindow.MainUserLogin = userLogin;
+
+                    passwordLine = "";
+
+                    passwordTextBox.Text = Constants.Password;
+                    passwordTextBox.Foreground = Brushes.Gray;
+
+                    emailTextBox.Text = Constants.Email;
+                    emailTextBox.Foreground = Brushes.Gray;
+
                     mainWindow.ShowDialog();
 
-                    Close();
+                    if(mainWindow.FlagToExit)
+                    {
+                        Close();
+                    }
+
+                    Show();
                 }
             }
             else
@@ -128,6 +149,102 @@ namespace Client_task_manager
             emailTextBox.IsEnabled = true;
             passwordTextBox.IsEnabled = true;
             signUpButton.IsEnabled = true;
+        }
+
+        private void emailTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if(textBox.Text == Constants.Email)
+            {
+                textBox.Text = "";
+                textBox.Foreground = Brushes.Black;
+            }
+        }
+
+        private void emailTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if(String.IsNullOrEmpty(textBox.Text))
+            {
+                textBox.Text = Constants.Email;
+                textBox.Foreground = Brushes.Gray;
+            }
+        }
+
+        private void passwordTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if (textBox.Text == Constants.Password)
+            {
+                passwordLine = "";
+                textBox.Text = "";
+                textBox.Foreground = Brushes.Black;
+            }
+        }
+
+        private void passwordTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if (String.IsNullOrEmpty(textBox.Text))
+            {
+                textBox.Text = Constants.Password;
+                textBox.Foreground = Brushes.Gray;
+            }
+        }
+
+        private void passwordTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            string textBoxText = textBox.Text;
+
+            if (textBoxText != Constants.Password)
+            {
+                char[] symbolsArray = textBoxText.ToCharArray();
+                int symbolsArrayLength = symbolsArray.Length;
+
+                if (symbolsArrayLength < previouseLengthPasswordLine)
+                {
+                    textBox.Text = "";
+                    passwordLine = "";
+                    previouseLengthPasswordLine = 0;
+                }
+                else if (previouseLengthPasswordLine < 1)
+                {
+                    passwordLine = textBoxText;
+
+                    previouseLengthPasswordLine = symbolsArrayLength;
+
+                    textBox.Text = new string('*', symbolsArrayLength);
+                }
+                else
+                {
+                    if (symbolsArrayLength < 1)
+                    {
+                        passwordLine = "";
+                    }
+                    else
+                    {
+                        char lastIndexSymbolsArray = symbolsArray[symbolsArrayLength - 1];
+
+                        if (lastIndexSymbolsArray != '*')
+                        {
+                            passwordLine += symbolsArray[symbolsArrayLength - 1];
+
+                            symbolsArray[symbolsArrayLength - 1] = '*';
+
+                            textBox.Text = new string(symbolsArray);
+                        }
+                    }
+
+                    previouseLengthPasswordLine = symbolsArray.Length;
+                }
+
+                textBox.CaretIndex = textBox.Text.Length;
+            }
         }
     }
 }

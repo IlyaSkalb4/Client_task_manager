@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -22,6 +23,8 @@ namespace Client_task_manager
         private NetworkManager networkManager;
 
         private List<UserTask> tasks = null;
+
+        private List<UserTask> currentTasks = null;
 
         private DispatcherTimer timer = null;
 
@@ -58,9 +61,13 @@ namespace Client_task_manager
             }
         }
 
+        public bool FlagToExit { get; private set; }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             networkManager = new NetworkManager();
+
+            currentTasks = new List<UserTask>();
 
             timer = new DispatcherTimer();
             //timer.Interval = TimeSpan.FromMinutes(timerInterval);
@@ -68,10 +75,36 @@ namespace Client_task_manager
             timer.Tick += Timer_Tick;
             timer.Start();
 
+            StringTruncationConverter.NumberOfSymbols = 28;
+
+            FlagToExit = true;
+
             if (tasks == null)
                 return;
 
             UpdateListsBox(tasks);
+        }
+
+        private void ButtonAnimation_Loaded(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+
+            double fromPercentage = 0.5;
+            double toPercentage = 1.5;
+
+            double fromValue = button.ActualWidth * fromPercentage;
+            double toValue = button.ActualWidth * toPercentage;
+
+            DoubleAnimation animation = new DoubleAnimation
+            {
+                From = fromValue,
+                To = toValue,
+                Duration = TimeSpan.FromSeconds(1)
+            };
+
+            button.BeginAnimation(Button.WidthProperty, animation);
+
+            button.IsEnabled = false;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -85,6 +118,24 @@ namespace Client_task_manager
             ReceiveUserTasksAsync(sendPackage);
         }
 
+        private void executeTaskButton_Click(object sender, RoutedEventArgs e)
+        {
+            SendCompletedUserTask();
+
+            executeTaskButton.IsEnabled = false;
+        }
+
+        private void currentTasksListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (currentTasksListBox.SelectedItems.Count < 1)
+            {
+                executeTaskButton.IsEnabled = false;
+                return;
+            }
+
+            executeTaskButton.IsEnabled = true;
+        }
+
         private void CompleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
             if (currentTasksListBox.SelectedItems.Count < 1)
@@ -92,36 +143,70 @@ namespace Client_task_manager
                 return;
             }
 
-            UserTask currentUserTask = (UserTask)currentTasksListBox.SelectedItem;
+            SendCompletedUserTask();
+        }
 
-            TaskAccomplished taskAccomplished = new TaskAccomplished
+        private void AllPrioritiesMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            currentTasksListBox.Items.Clear();
+
+            foreach(UserTask userTask in currentTasks) 
             {
-                UserEmailAndPassword = new UserLogin
+                currentTasksListBox.Items.Add(userTask);
+            }
+        }
+
+        private void PriorityMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            string menuItemName = ((MenuItem)sender).Name;
+            string priority = "";
+
+            if(menuItemName == "highPriorityMenuItem") 
+            {
+                priority = Constants.High;
+            }
+            else if (menuItemName == "lowPriorityMenuItem")
+            {
+                priority = Constants.Low;
+            }
+            else if (menuItemName == "normalPriorityMenuItem")
+            {
+                priority = Constants.Normal;
+            }
+            else
+            {
+                return;
+            }
+
+            currentTasksListBox.Items.Clear();
+
+            foreach (UserTask userTask in currentTasks)
+            {
+                if (userTask.Priority == priority)
                 {
-                    UserEmail = userLogin.UserEmail,
-                    UserPassword = userLogin.UserPassword
-                },
-                SubTaskTitle = currentUserTask.SubTaskTitle,
-                IsTaskCompleted = currentUserTask.IsTaskCompleted
-            };
+                    currentTasksListBox.Items.Insert(0, userTask);
+                }
+            }
+        }
 
-            ReadyPackage readyPackage = new ReadyPackage
-            {
-                ObjType = Constants.CompletedUserTask,
-                Data = taskAccomplished
-            };
+        private void CustomInstructionsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
 
-            SendCompletedUserTaskAsync(readyPackage);
+        }
+
+        private void LogOutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            FlagToExit = false;
+
+            userLogin = null;
+
+            Close();
         }
 
         private async void ReceiveUserTasksAsync(ReadyPackage readyPackage)
         {
             if (await networkManager.SendAndReceivePackageAsync(readyPackage))
             {
-                currentTasksListBox.Items.Clear();
-                completeTasksListBox.Items.Clear();
-                expiredTasksListBox.Items.Clear();
-
                 UpdateListsBox(networkManager.UserTasks);
 
                 networkManager.ClearUserTasks();
@@ -136,8 +221,13 @@ namespace Client_task_manager
         {
             if (await networkManager.SendAndReceivePackageAsync(readyPackage))
             {
-                completeTasksListBox.Items.Add(currentTasksListBox.SelectedItem);
+                UserTask userTask = (UserTask)currentTasksListBox.SelectedItem;
 
+                userTask.DateTimeCompleted = ((TaskAccomplished)readyPackage.Data).DateTimeCompleted;
+
+                completeTasksListBox.Items.Insert(0, userTask);
+
+                currentTasks.RemoveAt(currentTasksListBox.SelectedIndex);
                 currentTasksListBox.Items.RemoveAt(currentTasksListBox.SelectedIndex);
             }
             else
@@ -146,38 +236,68 @@ namespace Client_task_manager
             }
         }
 
+        private void SendCompletedUserTask()
+        {
+            UserTask currentUserTask = (UserTask)currentTasksListBox.SelectedItem;
+
+            TaskAccomplished taskAccomplished = new TaskAccomplished
+            {
+                UserEmailAndPassword = new UserLogin
+                {
+                    UserEmail = userLogin.UserEmail,
+                    UserPassword = userLogin.UserPassword
+                },
+                SubTaskTitle = currentUserTask.SubTaskTitle,
+                IsTaskCompleted = currentUserTask.IsTaskCompleted,
+                DateTimeCompleted = DateTime.Now
+            };
+
+            ReadyPackage readyPackage = new ReadyPackage
+            {
+                ObjType = Constants.CompletedUserTask,
+                Data = taskAccomplished
+            };
+
+            SendCompletedUserTaskAsync(readyPackage);
+        }
+
         private void UpdateListsBox(List<UserTask> userTasks)
         {
-            foreach (UserTask userTask in userTasks)
+            if (userTasks != null)
             {
-                if (userTask.IsTaskCompleted.HasValue)
+                currentTasks.Clear();
+
+                currentTasksListBox.Items.Clear();
+                completeTasksListBox.Items.Clear();
+                expiredTasksListBox.Items.Clear();
+
+                foreach (UserTask userTask in userTasks)
                 {
-                    if (userTask.IsTaskCompleted.Value)
+                    if (userTask.IsTaskCompleted.HasValue)
                     {
-                        completeTasksListBox.Items.Add(userTask);
+                        if (userTask.IsTaskCompleted.Value)
+                        {
+                            completeTasksListBox.Items.Insert(0, userTask);
+                        }
+                        else
+                        {
+                            expiredTasksListBox.Items.Insert(0, userTask);
+                        }
                     }
                     else
                     {
-                        expiredTasksListBox.Items.Add(userTask);
-                    }
-                }
-                else
-                {
-                    if (userTask.DeadlineValue == 100)
-                    {
-                        completeTasksListBox.Items.Add(userTask);
-                    }
-                    else
-                    {
-                        currentTasksListBox.Items.Add(userTask);
+                        if (userTask.DeadlineValue == 100)
+                        {
+                            completeTasksListBox.Items.Insert(0, userTask);
+                        }
+                        else
+                        {
+                            currentTasks.Insert(0, userTask);
+                            currentTasksListBox.Items.Insert(0, userTask);
+                        }
                     }
                 }
             }
-        }
-
-        private void Window_StateChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

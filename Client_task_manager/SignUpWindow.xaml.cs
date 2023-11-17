@@ -10,6 +10,8 @@ using System.Windows;
 using System.Threading.Tasks;
 using Classes_for_transferring_users;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Controls.Primitives;
 
 namespace Client_task_manager
 {
@@ -47,19 +49,19 @@ namespace Client_task_manager
             string password = passwordTextBox.Text;
             string passwordRepeat = passwordRepeatTextBox.Text;
 
-            if (firstName == "")
+            if (firstName == "" || firstName == Constants.FirstName)
             {
                 firstNameWarningTextBlock.Text = Constants.MustBeFilled;
                 flagCheck = true;
             }
 
-            if (lastName == "")
+            if (lastName == "" || lastName == Constants.LastName)
             {
                 lastNameWarningTextBlock.Text = Constants.MustBeFilled;
                 flagCheck = true;
             }
 
-            if (email == "")
+            if (email == "" || email == Constants.Email)
             {
                 emailWarningTextBlock.Text = Constants.MustBeFilled;
                 flagCheck = true;
@@ -70,7 +72,7 @@ namespace Client_task_manager
                 flagCheck = true;
             }
 
-            if (password == "")
+            if (password == "" || password == Constants.Password)
             {
                 passwordWarningTextBlock.Text = Constants.MustBeFilled;
                 flagCheck = true;
@@ -81,7 +83,7 @@ namespace Client_task_manager
                 flagCheck = true;
             }
 
-            if (passwordRepeat == "")
+            if (passwordRepeat == "" || passwordRepeat == Constants.RepeatPassword)
             {
                 passwordRepeatWarningTextBlock.Text = Constants.MustBeFilled;
                 flagCheck = true;
@@ -114,6 +116,73 @@ namespace Client_task_manager
             }
 
             Close();
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+
+            string textBoxName = textBox.Name;
+            string newText = CheckTextBoxNames(textBoxName);
+            
+            if(newText == "")
+            {
+                return;
+            }
+            
+            if(textBox.Text == newText)
+            {
+                textBox.Text = "";
+                textBox.Foreground = Brushes.Black;
+            }
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+
+            string textBoxName = textBox.Name;
+            string newText = CheckTextBoxNames(textBoxName);
+
+            if (newText == "")
+            {
+                return;
+            }
+
+            if (String.IsNullOrEmpty(textBox.Text))
+            {
+                textBox.Text = newText;
+                textBox.Foreground = Brushes.Gray;
+            }
+
+        }
+
+        private string CheckTextBoxNames(string textBoxName)
+        {
+            if (textBoxName == "firstNameTextBox")
+            {
+                return Constants.FirstName;
+            }
+            else if (textBoxName == "lastNameTextBox")
+            {
+                return Constants.LastName;
+            }
+            else if (textBoxName == "emailTextBox")
+            {
+                return Constants.Email;
+            }
+            else if (textBoxName == "passwordTextBox")
+            {
+                return Constants.Password;
+            }
+            else if (textBoxName == "passwordRepeatTextBox")
+            {
+                return Constants.RepeatPassword;
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }

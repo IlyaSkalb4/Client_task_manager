@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client_task_manager"
         mc:Ignorable="d"
-        Title="Sign_up" SizeToContent="WidthAndHeight" FontSize="18" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Sign up" SizeToContent="WidthAndHeight" FontSize="18" WindowStartupLocation="CenterScreen" Icon="./Images/sign_up_icon32.ico" Loaded="Window_Loaded">
     <Grid Style="{DynamicResource ResourceKey=GridGradientStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -24,26 +24,26 @@
 
         <TextBlock Grid.Row="0" Text="Sign up" TextAlignment="Center" VerticalAlignment="Center" Margin="10"/>
 
-        <TextBlock Grid.Row="1" x:Name="firstNameWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="1" x:Name="firstNameWarningTextBlock" Foreground="#ff3700" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
-        <TextBox Grid.Row="2" x:Name="firstNameTextBox" Text="First name" Margin="10,5,10,5"/>
+        <TextBox Grid.Row="2" x:Name="firstNameTextBox" Text="First name" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
 
-        <TextBlock Grid.Row="3" x:Name="lastNameWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
-        
-        <TextBox Grid.Row="4" x:Name="lastNameTextBox" Text="Last name" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="3" x:Name="lastNameWarningTextBlock" Foreground="#ff3700" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
-        <TextBlock Grid.Row="5" x:Name="emailWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBox Grid.Row="4" x:Name="lastNameTextBox" Text="Last name" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
 
-        <TextBox Grid.Row="6" x:Name="emailTextBox" Text="Email" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="5" x:Name="emailWarningTextBlock" Foreground="#ff3700" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
-        <TextBlock Grid.Row="7" x:Name="passwordWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBox Grid.Row="6" x:Name="emailTextBox" Text="Email" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
 
-        <TextBox Grid.Row="8" x:Name="passwordTextBox" Text="Password" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="7" x:Name="passwordWarningTextBlock" Foreground="#ff3700" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
-        <TextBlock Grid.Row="9" x:Name="passwordRepeatWarningTextBlock" Foreground="OrangeRed" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
+        <TextBox Grid.Row="8" x:Name="passwordTextBox" Text="Password" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
 
-        <TextBox Grid.Row="10" x:Name="passwordRepeatTextBox" Text="Repeat password" Margin="10,5,10,5"/>
+        <TextBlock Grid.Row="9" x:Name="passwordRepeatWarningTextBlock" Foreground="#ff3700" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
-        <Button Grid.Row="11" x:Name="singUpButton" Content="Sign up" Width="300" Height="40" Margin="10" Click="singUpButton_Click"/>
+        <TextBox Grid.Row="10" x:Name="passwordRepeatTextBox" Text="Repeat password" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
+
+        <Button Grid.Row="11" x:Name="singUpButton" Content="Sign up" Width="300" Height="30" Margin="10,20,10,10" Click="singUpButton_Click"/>
     </Grid>
 </Window>

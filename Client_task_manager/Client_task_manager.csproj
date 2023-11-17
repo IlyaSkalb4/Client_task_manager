@@ -69,6 +69,7 @@
     <Compile Include="SignUpWindow.xaml.cs">
       <DependentUpon>SignUpWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StringTrancationConverter.cs" />
     <Page Include="DefaultTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -119,6 +120,33 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\dot_dot_dot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\help_information_instruction.png" />
+    <Resource Include="Images\log_out_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\green_circle_icon32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\orange_circle_icon32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\red_circle_icon32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\complete_task_icon32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\rgb_icon32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\sign_in_icon32.ico" />
+    <Resource Include="Images\sign_up_icon32.ico" />
+    <Resource Include="Images\task_tasks_icon32.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

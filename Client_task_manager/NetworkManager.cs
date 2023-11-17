@@ -33,7 +33,10 @@ namespace Client_task_manager
 
         public void ClearUserTasks()
         {
-            userTasks.Clear();
+            if (userTasks != null)
+            {
+                userTasks.Clear();
+            }
         }
 
         public async Task<bool> SendAndReceivePackageAsync(ReadyPackage readyPackage)
