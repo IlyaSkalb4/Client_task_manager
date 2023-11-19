@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace Client_task_manager
 {
-    internal class NetworkManager
+    internal class NetworkManager //Клас дає змогу надсилати запити серверу на реєстрацію, вхід у систему та отримання завдань.
     {
         private TcpClient tcpClient = null;
 
@@ -25,13 +25,27 @@ namespace Client_task_manager
 
         private bool flagRequestApproved;
 
-        public List<UserTask> UserTasks { get {  return userTasks; } }
+        public List<UserTask> UserTasks //Властивість, яка дає доступ до списку завдань користувача.
+        {
+            get
+            { 
+                return userTasks;
+            }
+        }
 
-        public string ErrorType { get; private set; }
+        public string ErrorType //Властивість, що зберігає тип помилки.
+        {
+            get;
+            private set;
+        } 
 
-        public string ErrorMessage { get; private set; }
+        public string ErrorMessage //Властивість, що зберігає саму помилку.
+        {
+            get;
+            private set;
+        }
 
-        public void ClearUserTasks()
+        public void ClearUserTasks() //Метод, який очищає завдання для даного класу.
         {
             if (userTasks != null)
             {
@@ -39,7 +53,7 @@ namespace Client_task_manager
             }
         }
 
-        public async Task<bool> SendAndReceivePackageAsync(ReadyPackage readyPackage)
+        public async Task<bool> SendAndReceivePackageAsync(ReadyPackage readyPackage) //Метод, у якому проходить повний алгоритм приймання-відправлення запитів і результатів.
         {
             bool taskRunResult = false;
 
@@ -78,7 +92,7 @@ namespace Client_task_manager
             return flagRequestApproved;
         }
 
-        private bool SendPackage(ReadyPackage readyPackage)
+        private bool SendPackage(ReadyPackage readyPackage) //Метод, який надсилає запити.
         {
             try
             {
@@ -93,12 +107,12 @@ namespace Client_task_manager
             return true;
         }
 
-        private bool ConnectAndGetStream()
+        private bool ConnectAndGetStream() //Метод, який реалізує підключення до сервера та отримання мережевого потоку.
         {
             try
             {
                 tcpClient = new TcpClient();
-                tcpClient.Connect(Constants.ServerIP, Constants.Port1024);
+                tcpClient.Connect(Constants.ServerIP, Constants.Port);
 
                 networkStream = tcpClient.GetStream();
             }
@@ -112,7 +126,7 @@ namespace Client_task_manager
             return true;
         }
 
-        private void ReceivePaсkage()
+        private void ReceivePaсkage() //Метод, який отримує та обробляє відповіді на запити.
         {
             try
             {

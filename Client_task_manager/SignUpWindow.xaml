@@ -5,7 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client_task_manager"
         mc:Ignorable="d"
-        Title="Sign up" SizeToContent="WidthAndHeight" FontSize="18" WindowStartupLocation="CenterScreen" Icon="./Images/sign_up_icon32.ico" Loaded="Window_Loaded">
+        Title="Sign up"
+        MinWidth="336"
+        MinHeight="450"
+        MaxWidth="336"
+        MaxHeight="249"
+        SizeToContent="WidthAndHeight"
+        FontSize="18"
+        WindowStartupLocation="CenterScreen"
+        Icon="./Images/sign_up_icon32.ico"
+        Loaded="Window_Loaded">
     <Grid Style="{DynamicResource ResourceKey=GridGradientStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -38,12 +47,12 @@
 
         <TextBlock Grid.Row="7" x:Name="passwordWarningTextBlock" Foreground="#ff3700" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
-        <TextBox Grid.Row="8" x:Name="passwordTextBox" Text="Password" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
+        <TextBox Grid.Row="8" x:Name="passwordTextBox" Text="Password" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" TextChanged="PasswordTextBox_TextChanged"/>
 
         <TextBlock Grid.Row="9" x:Name="passwordRepeatWarningTextBlock" Foreground="#ff3700" FontSize="14" TextAlignment="Left" Margin="10,5,10,5"/>
 
-        <TextBox Grid.Row="10" x:Name="passwordRepeatTextBox" Text="Repeat password" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
+        <TextBox Grid.Row="10" x:Name="passwordRepeatTextBox" Text="Repeat password" Foreground="Gray" Margin="10,5,10,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" TextChanged="PasswordRepeatTextBox_TextChanged"/>
 
-        <Button Grid.Row="11" x:Name="singUpButton" Content="Sign up" Width="300" Height="30" Margin="10,20,10,10" Click="singUpButton_Click"/>
+        <Button Grid.Row="11" x:Name="signUpButton" Content="Sign up" Height="30" Margin="10,20,10,10" Click="SignUpButton_Click"/>
     </Grid>
 </Window>

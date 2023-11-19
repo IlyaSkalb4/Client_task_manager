@@ -5,7 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client_task_manager"
         mc:Ignorable="d"
-    Title="Sign in" SizeToContent="WidthAndHeight" FontSize="18" WindowStartupLocation="CenterScreen" Icon="./Images/sign_in_icon32.ico" Loaded="Window_Loaded">
+        Title="Sign in"
+        MinWidth="336"
+        MinHeight="249"
+        MaxWidth="336"
+        MaxHeight="249"
+        FontSize="18" WindowStartupLocation="CenterScreen"
+        Icon="./Images/sign_in_icon32.ico"
+        Loaded="Window_Loaded">
 
     <Grid Style="{DynamicResource ResourceKey=GridGradientStyle}">
         <Grid.RowDefinitions>
@@ -21,11 +28,11 @@
 
         <TextBlock Grid.Row="1" x:Name="emailWarningTextBlock" Foreground="#ff3700" TextAlignment="Left" VerticalAlignment="Center" FontSize="14" Margin="10,5,10,5"/>
 
-        <TextBox Grid.Row="2" x:Name="emailTextBox" Text="Email" Foreground="Gray" Margin="10,5,10,5" GotFocus="emailTextBox_GotFocus" LostFocus="emailTextBox_LostFocus"/>
+        <TextBox Grid.Row="2" x:Name="emailTextBox" Text="Email" Foreground="Gray" Margin="10,5,10,5" GotFocus="EmailTextBox_GotFocus" LostFocus="EmailTextBox_LostFocus"/>
 
         <TextBlock Grid.Row="3" x:Name="passwordWarningTextBlock" Foreground="#ff3700" TextAlignment="Left" VerticalAlignment="Center" FontSize="14" Margin="10,5,10,5"/>
 
-        <TextBox Grid.Row="4" x:Name="passwordTextBox" Text="Password" Foreground="Gray" Margin="10,5,10,15" GotFocus="passwordTextBox_GotFocus" LostFocus="passwordTextBox_LostFocus" TextChanged="passwordTextBox_TextChanged"/>
+        <TextBox Grid.Row="4" x:Name="passwordTextBox" Text="Password" Foreground="Gray" Margin="10,5,10,15" GotFocus="PasswordTextBox_GotFocus" LostFocus="PasswordTextBox_LostFocus" TextChanged="PasswordTextBox_TextChanged"/>
 
         <Grid Grid.Row="5">
             <Grid.ColumnDefinitions>
@@ -33,9 +40,9 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="logInButton" Grid.Column="0" Content="Log in" Margin="10,5,5,5" Padding="45,5,45,5" Click="logInButton_Click"/>
+            <Button x:Name="logInButton" Grid.Column="0" Content="Log in" Margin="10,5,5,5" Padding="45,5,45,5" Click="LogInButton_Click"/>
 
-            <Button x:Name="signUpButton" Grid.Column="1" Content="Sign up" Margin="5,5,10,5" Padding="40,5,40,5" Click="signUpButton_Click"/>
+            <Button x:Name="signUpButton" Grid.Column="1" Content="Sign up" Margin="5,5,10,5" Padding="40,5,40,5" Click="SignUpButton_Click"/>
         </Grid>
     </Grid>
 </Window>

@@ -18,7 +18,7 @@ using Classes_for_transferring_users;
 
 namespace Client_task_manager
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window //Клас, який реалізує основне вікно.
     {
         private NetworkManager networkManager;
 
@@ -30,14 +30,12 @@ namespace Client_task_manager
 
         private UserLogin userLogin = null;
 
-        private int timerInterval = 30;
-
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        public List<UserTask> UserTasks
+        public List<UserTask> UserTasks //Властивість, яка зберігає список завдань користувача.
         {
             get
             {
@@ -49,7 +47,7 @@ namespace Client_task_manager
             }
         }
 
-        public UserLogin MainUserLogin
+        public UserLogin MainUserLogin //Властивість, яка зберігає логін і пароль користувача.
         {
             get
             {
@@ -61,23 +59,28 @@ namespace Client_task_manager
             }
         }
 
-        public bool FlagToExit { get; private set; }
+        public bool FlagToExit //Властивість, яка показує яким способом користувач закрив вікно.
+        {
+            get;
+            private set;
+        }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e) //Метод, що запускається під час завантаження вікна, виділяє пам'ять для основних класів, запускає таймер, оновлює завдання, встановлює початкові значення змінних.
         {
             networkManager = new NetworkManager();
 
             currentTasks = new List<UserTask>();
 
             timer = new DispatcherTimer();
-            //timer.Interval = TimeSpan.FromMinutes(timerInterval);
-            timer.Interval = TimeSpan.FromSeconds(timerInterval);
+            timer.Interval = TimeSpan.FromSeconds(Constants.TimerInterval);
             timer.Tick += Timer_Tick;
             timer.Start();
 
-            StringTruncationConverter.NumberOfSymbols = 28;
+            StringTruncationConverter.NumberOfSymbols = Constants.NumberOfSymbols;
 
             FlagToExit = true;
+
+            executeTaskButton.IsEnabled = false;
 
             if (tasks == null)
                 return;
@@ -85,29 +88,7 @@ namespace Client_task_manager
             UpdateListsBox(tasks);
         }
 
-        private void ButtonAnimation_Loaded(object sender, RoutedEventArgs e)
-        {
-            Button button = (Button)sender;
-
-            double fromPercentage = 0.5;
-            double toPercentage = 1.5;
-
-            double fromValue = button.ActualWidth * fromPercentage;
-            double toValue = button.ActualWidth * toPercentage;
-
-            DoubleAnimation animation = new DoubleAnimation
-            {
-                From = fromValue,
-                To = toValue,
-                Duration = TimeSpan.FromSeconds(1)
-            };
-
-            button.BeginAnimation(Button.WidthProperty, animation);
-
-            button.IsEnabled = false;
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
+        private void Timer_Tick(object sender, EventArgs e) //Метод, який запускає відправлення запиту на оновлення завдань під час тику таймера.
         {
             ReadyPackage sendPackage = new ReadyPackage
             {
@@ -118,14 +99,14 @@ namespace Client_task_manager
             ReceiveUserTasksAsync(sendPackage);
         }
 
-        private void executeTaskButton_Click(object sender, RoutedEventArgs e)
+        private void ExecuteTaskButton_Click(object sender, RoutedEventArgs e) //Метод, який при натисканні на кнопку executeTaskButton запускає надсилання запиту на виконання завдання.
         {
             SendCompletedUserTask();
 
             executeTaskButton.IsEnabled = false;
         }
 
-        private void currentTasksListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CurrentTasksListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) //Метод, який у разі зміни вибору нинішнього завдання змінює доступ до кнопки executeTaskButton.
         {
             if (currentTasksListBox.SelectedItems.Count < 1)
             {
@@ -136,7 +117,7 @@ namespace Client_task_manager
             executeTaskButton.IsEnabled = true;
         }
 
-        private void CompleteMenuItem_Click(object sender, RoutedEventArgs e)
+        private void CompleteMenuItem_Click(object sender, RoutedEventArgs e) //Метод, який при натисканні на 'Execute' елемент у контекстному меню, запускає надсилання запиту на виконання завдання.
         {
             if (currentTasksListBox.SelectedItems.Count < 1)
             {
@@ -146,7 +127,7 @@ namespace Client_task_manager
             SendCompletedUserTask();
         }
 
-        private void AllPrioritiesMenuItem_Click(object sender, RoutedEventArgs e)
+        private void AllPrioritiesMenuItem_Click(object sender, RoutedEventArgs e) //Метод, який при натисканні на 'All priorities' елемент у контекстному меню, запускає показує завдання за всіма пріоритетами.
         {
             currentTasksListBox.Items.Clear();
 
@@ -156,7 +137,7 @@ namespace Client_task_manager
             }
         }
 
-        private void PriorityMenuItem_Click(object sender, RoutedEventArgs e)
+        private void PriorityMenuItem_Click(object sender, RoutedEventArgs e) //Метод, який при натисканні на конкретний пріоритет у контекстному меню, показує завдання за цим пріоритетом.
         {
             string menuItemName = ((MenuItem)sender).Name;
             string priority = "";
@@ -189,12 +170,14 @@ namespace Client_task_manager
             }
         }
 
-        private void CustomInstructionsMenuItem_Click(object sender, RoutedEventArgs e)
+        private void CustomInstructionsMenuItem_Click(object sender, RoutedEventArgs e) //Метод, який при натисканні на 'Custom instructions' елемент у меню три точки, запускає вікно користувацької інструкції.
         {
+            UserManual userManual = new UserManual();
 
+            userManual.ShowDialog();
         }
 
-        private void LogOutMenuItem_Click(object sender, RoutedEventArgs e)
+        private void LogOutMenuItem_Click(object sender, RoutedEventArgs e) //Метод, який при натисканні на 'Log out' елемент у меню три точки, закриває основне вікно.
         {
             FlagToExit = false;
 
@@ -203,7 +186,7 @@ namespace Client_task_manager
             Close();
         }
 
-        private async void ReceiveUserTasksAsync(ReadyPackage readyPackage)
+        private async void ReceiveUserTasksAsync(ReadyPackage readyPackage) //Метод, який надсилає запит оновлення завдань на сервер. У разі успіху оновлює завдання, у разі невдачі показує помилку.
         {
             if (await networkManager.SendAndReceivePackageAsync(readyPackage))
             {
@@ -217,7 +200,7 @@ namespace Client_task_manager
             }
         }
 
-        private async void SendCompletedUserTaskAsync(ReadyPackage readyPackage)
+        private async void SendCompletedUserTaskAsync(ReadyPackage readyPackage) //Метод, який надсилає запит виконати завдання на сервер. У разі успіху додає завдання до виконаних, у разі невдачі показує помилку.
         {
             if (await networkManager.SendAndReceivePackageAsync(readyPackage))
             {
@@ -236,7 +219,7 @@ namespace Client_task_manager
             }
         }
 
-        private void SendCompletedUserTask()
+        private void SendCompletedUserTask() //Метод, який готує виконане завдання і запускає запит на виконання.
         {
             UserTask currentUserTask = (UserTask)currentTasksListBox.SelectedItem;
 
@@ -261,7 +244,7 @@ namespace Client_task_manager
             SendCompletedUserTaskAsync(readyPackage);
         }
 
-        private void UpdateListsBox(List<UserTask> userTasks)
+        private void UpdateListsBox(List<UserTask> userTasks) //Метод, який оновлює списки завдань.
         {
             if (userTasks != null)
             {

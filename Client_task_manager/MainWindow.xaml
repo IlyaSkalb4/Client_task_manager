@@ -5,7 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client_task_manager"
         mc:Ignorable="d"
-        Title="Client task manager" MinHeight="600" MinWidth="1200" WindowState="Maximized" Icon="./Images/task_tasks_icon32.ico" Loaded="Window_Loaded">
+        Title="Task viewer"
+        MinHeight="600"
+        MinWidth="1200"
+        MaxHeight="1080"
+        MaxWidth="1920"
+        WindowState="Maximized"
+        Icon="./Images/task_tasks_icon32.ico"
+        Loaded="Window_Loaded">
+    
         <Window.Resources>
             <local:StringTruncationConverter x:Key="StringTruncationConverter" />
             <SolidColorBrush x:Key="Menu.Static.Background" Color="White"/>
@@ -358,11 +366,11 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Current task:" TextWrapping="Wrap" TextAlignment="Left" FontSize="16" Margin="5"/>
 
-                        <Button x:Name="executeTaskButton" Grid.Column="1" Content="Execute" HorizontalAlignment="Right" Margin="3" Loaded="ButtonAnimation_Loaded" Click="executeTaskButton_Click"/>
+                        <Button x:Name="executeTaskButton" Grid.Column="1" Content="Execute" HorizontalAlignment="Right" Margin="3" Click="ExecuteTaskButton_Click"/>
                     </Grid>
                 </Border>
 
-                <ListBox Grid.Row="1" x:Name="currentTasksListBox" SelectionChanged="currentTasksListBox_SelectionChanged">
+                <ListBox Grid.Row="1" x:Name="currentTasksListBox" SelectionChanged="CurrentTasksListBox_SelectionChanged">
                     <ListBox.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Execute" Click="CompleteMenuItem_Click">

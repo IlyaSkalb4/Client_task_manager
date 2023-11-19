@@ -9,50 +9,25 @@ using System.Windows.Data;
 
 namespace Client_task_manager
 {
-    public class StringTruncationConverter : IValueConverter
+    public class StringTruncationConverter : IValueConverter //Клас для обрізання тексту.
     {
-        public static int NumberOfSymbols { get; set; }
+        public static int NumberOfSymbols //Кількість символів, що залишаються. 
+        {
+            get;
+            set;
+        }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) //Метод, який обрізає текст.
         {
             if (value is string text)
             {
-                return text.Length > NumberOfSymbols ? text.Substring(0, NumberOfSymbols) + "..." : text;
+                return text.Length > NumberOfSymbols ? text.Substring(0, NumberOfSymbols) + Constants.Dot3X : text;
             }
 
             return value;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class GetBorderStyleConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is string text)
-            {
-                if (text == "High")
-                {
-                    return (Style)Application.Current.Resources["priorityHighBorder"];
-                }
-                else if (text == "Low")
-                {
-                    return (Style)Application.Current.Resources["priorityLowBorder"];
-                }
-                else if (text == "Normal")
-                {
-                    return (Style)Application.Current.Resources["priorityNormalBorder"];
-                }
-            }
-
-            return value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) //Метод для викидання винятку.
         {
             throw new NotImplementedException();
         }

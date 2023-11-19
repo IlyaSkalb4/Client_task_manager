@@ -13,31 +13,31 @@ using System.Windows.Media;
 
 namespace Client_task_manager
 {
-    public partial class SignInWindow : Window
+    public partial class SignInWindow : Window //Клас, який реалізує вікно входу.
     {
         private NetworkManager networkManager = null;
+
+        private PasswordHiding passwordHiding = null;
 
         private UserLogin userLogin = null;
 
         private string passwordLine;
-
-        private int previouseLengthPasswordLine;
 
         public SignInWindow()
         {
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e) //Метод, який виділяє пам'ять для необхідних класів під час завантаження вікна.
         {
             ServerSide.Start();
 
             networkManager = new NetworkManager();
 
-            passwordLine = "";
+            passwordHiding = new PasswordHiding();
         }
 
-        private void logInButton_Click(object sender, RoutedEventArgs e)
+        private void LogInButton_Click(object sender, RoutedEventArgs e) //Метод, який при натисканні на кнопку logInButton перевіряє поля, введені користувачем, і якщо всі перевірки пройшли успішно, запускає відправлення запиту на вхід у систему.
         {
             ReadyPackage sendPackage;
 
@@ -48,7 +48,7 @@ namespace Client_task_manager
             emailWarningTextBlock.Text = "";
             passwordWarningTextBlock.Text = "";
 
-            if (CommonMethods.IsLineEmpty(email) || email == Constants.Email)
+            if (String.IsNullOrEmpty(email) || email == Constants.Email)
             {
                 emailWarningTextBlock.Text = Constants.EnterEmail;
                 flagCheck = true;
@@ -59,7 +59,7 @@ namespace Client_task_manager
                 flagCheck = true;
             }
 
-            if (CommonMethods.IsLineEmpty(passwordLine))
+            if (String.IsNullOrEmpty(passwordLine))
             {
                 passwordWarningTextBlock.Text = Constants.EnterPassword;
                 flagCheck = true;
@@ -82,7 +82,7 @@ namespace Client_task_manager
             SendAndReceivePackageAsync(sendPackage);
         }
 
-        private void signUpButton_Click(object sender, RoutedEventArgs e)
+        private void SignUpButton_Click(object sender, RoutedEventArgs e) //Метод, який при натисканні на кнопку signUpButton запускає вікно реєстрації.
         {
             Hide();
 
@@ -92,7 +92,70 @@ namespace Client_task_manager
             Show();
         }
 
-        private async void SendAndReceivePackageAsync(ReadyPackage readyPackage)
+        private void EmailTextBox_GotFocus(object sender, RoutedEventArgs e) //Метод, який змінює колір шрифту при отриманні фокусу emailTextBox. 
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if(textBox.Text == Constants.Email)
+            {
+                textBox.Text = "";
+                textBox.Foreground = Brushes.Black;
+            }
+        }
+
+        private void EmailTextBox_LostFocus(object sender, RoutedEventArgs e) //Метод, який змінює колір шрифту при втраті фокусу emailTextBox. 
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if(String.IsNullOrEmpty(textBox.Text))
+            {
+                textBox.Text = Constants.Email;
+                textBox.Foreground = Brushes.Gray;
+            }
+        }
+
+        private void PasswordTextBox_GotFocus(object sender, RoutedEventArgs e) //Метод, який змінює колір шрифту при отриманні фокусу passwordTextBox.
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if (textBox.Text == Constants.Password)
+            {
+                passwordLine = "";
+                textBox.Text = "";
+                textBox.Foreground = Brushes.Black;
+            }
+        }
+
+        private void PasswordTextBox_LostFocus(object sender, RoutedEventArgs e) //Метод, який змінює колір шрифту при втраті фокусу passwordTextBox.
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if (String.IsNullOrEmpty(textBox.Text))
+            {
+                textBox.Text = Constants.Password;
+                textBox.Foreground = Brushes.Gray;
+            }
+        }
+
+        private void PasswordTextBox_TextChanged(object sender, TextChangedEventArgs e) //Метод, який змінює введені символи на крапку у passwordTextBox. 
+        {
+            TextBox textBox = (TextBox)sender;
+
+            string textBoxText = textBox.Text;
+
+            if (textBoxText != Constants.Password)
+            {
+                passwordHiding.HidePasswordLine(textBoxText);
+
+                passwordLine = passwordHiding.OriginalPasswordLine;
+
+                textBox.Text = passwordHiding.Points;
+
+                textBox.CaretIndex = textBox.Text.Length;
+            }
+        }
+
+        private async void SendAndReceivePackageAsync(ReadyPackage readyPackage) //Метод, який надсилає запит на вхід у систему. У разі успіху запускає основне вікно, у разі невдачі відображає помилку.
         {
             logInButton.IsEnabled = false;
             emailTextBox.IsEnabled = false;
@@ -110,6 +173,7 @@ namespace Client_task_manager
                     mainWindow.MainUserLogin = userLogin;
 
                     passwordLine = "";
+                    passwordHiding = new PasswordHiding();
 
                     passwordTextBox.Text = Constants.Password;
                     passwordTextBox.Foreground = Brushes.Gray;
@@ -119,7 +183,7 @@ namespace Client_task_manager
 
                     mainWindow.ShowDialog();
 
-                    if(mainWindow.FlagToExit)
+                    if (mainWindow.FlagToExit)
                     {
                         Close();
                     }
@@ -149,102 +213,6 @@ namespace Client_task_manager
             emailTextBox.IsEnabled = true;
             passwordTextBox.IsEnabled = true;
             signUpButton.IsEnabled = true;
-        }
-
-        private void emailTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-
-            if(textBox.Text == Constants.Email)
-            {
-                textBox.Text = "";
-                textBox.Foreground = Brushes.Black;
-            }
-        }
-
-        private void emailTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-
-            if(String.IsNullOrEmpty(textBox.Text))
-            {
-                textBox.Text = Constants.Email;
-                textBox.Foreground = Brushes.Gray;
-            }
-        }
-
-        private void passwordTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-
-            if (textBox.Text == Constants.Password)
-            {
-                passwordLine = "";
-                textBox.Text = "";
-                textBox.Foreground = Brushes.Black;
-            }
-        }
-
-        private void passwordTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-
-            if (String.IsNullOrEmpty(textBox.Text))
-            {
-                textBox.Text = Constants.Password;
-                textBox.Foreground = Brushes.Gray;
-            }
-        }
-
-        private void passwordTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-            string textBoxText = textBox.Text;
-
-            if (textBoxText != Constants.Password)
-            {
-                char[] symbolsArray = textBoxText.ToCharArray();
-                int symbolsArrayLength = symbolsArray.Length;
-
-                if (symbolsArrayLength < previouseLengthPasswordLine)
-                {
-                    textBox.Text = "";
-                    passwordLine = "";
-                    previouseLengthPasswordLine = 0;
-                }
-                else if (previouseLengthPasswordLine < 1)
-                {
-                    passwordLine = textBoxText;
-
-                    previouseLengthPasswordLine = symbolsArrayLength;
-
-                    textBox.Text = new string('*', symbolsArrayLength);
-                }
-                else
-                {
-                    if (symbolsArrayLength < 1)
-                    {
-                        passwordLine = "";
-                    }
-                    else
-                    {
-                        char lastIndexSymbolsArray = symbolsArray[symbolsArrayLength - 1];
-
-                        if (lastIndexSymbolsArray != '*')
-                        {
-                            passwordLine += symbolsArray[symbolsArrayLength - 1];
-
-                            symbolsArray[symbolsArrayLength - 1] = '*';
-
-                            textBox.Text = new string(symbolsArray);
-                        }
-                    }
-
-                    previouseLengthPasswordLine = symbolsArray.Length;
-                }
-
-                textBox.CaretIndex = textBox.Text.Length;
-            }
         }
     }
 }

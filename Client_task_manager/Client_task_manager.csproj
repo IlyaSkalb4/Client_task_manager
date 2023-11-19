@@ -61,7 +61,9 @@
     </ApplicationDefinition>
     <Compile Include="CommonMethods.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="GetBorderStyleConverter.cs" />
     <Compile Include="NetworkManager.cs" />
+    <Compile Include="PasswordHiding.cs" />
     <Compile Include="ServerSide.cs" />
     <Compile Include="SignInWindow.xaml.cs">
       <DependentUpon>SignInWindow.xaml</DependentUpon>
@@ -70,6 +72,9 @@
       <DependentUpon>SignUpWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="StringTrancationConverter.cs" />
+    <Compile Include="UserManual.xaml.cs">
+      <DependentUpon>UserManual.xaml</DependentUpon>
+    </Compile>
     <Page Include="DefaultTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -91,6 +96,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SignUpWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserManual.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -147,6 +156,9 @@
     <Resource Include="Images\sign_in_icon32.ico" />
     <Resource Include="Images\sign_up_icon32.ico" />
     <Resource Include="Images\task_tasks_icon32.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\help_information_instruction_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
